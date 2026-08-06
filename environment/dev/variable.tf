@@ -1,0 +1,11 @@
+variable "rgs" {}
+variable "vnets" {}
+variable "subnets" {}
+variable "pip" {}
+variable "vms" {}
+variable "key_vaults" {}
+variable "sql_server" {}
+variable "sql_database" {}
+variable "bastions" {}
+variable "application_gateways" {}
+variable "load_balancers" {}
