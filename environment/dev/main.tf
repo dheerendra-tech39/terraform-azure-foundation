@@ -53,7 +53,7 @@ locals {
 
 
 module "sql_database" {
-  depends_on = [ module.sql_server ]
+  depends_on = [module.sql_server]
 
   source = "../../modules/azurerm_sql_database"
 
@@ -71,7 +71,7 @@ module "bastions" {
 }
 
 module "application_gateway" {
-   depends_on = [module.subnets]
+  depends_on = [module.subnets]
 
   source = "../../modules/azurerm_application_gateway"
 
@@ -80,7 +80,7 @@ module "application_gateway" {
 }
 
 module "load_balancer" {
-   depends_on = [module.rgs]
+  depends_on = [module.rgs]
 
   source = "../../modules/azurerm_load_balancer"
 
