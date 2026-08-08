@@ -82,7 +82,7 @@ jobs:
         run: |
           terraform plan
         working-directory: environment/dev
-
+        
 
       # 10. Terraform Apply
       # APPLY sirf main branch par
