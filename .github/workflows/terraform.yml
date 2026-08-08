@@ -19,44 +19,73 @@ on:
 
 jobs:
 
-  terraform:
+  terraform-plan:
 
+    name: Terraform Plan
     runs-on: ubuntu-latest
 
     steps:
 
-      # Checkout GitHub repository
+      # 1. Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v4
 
 
-      # Install Terraform
+      # 2. Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
 
-      # Terraform Initialization
+      # 3. Azure Login using Service Principal
+      - name: Azure Login
+        run: |
+          az login \
+            --service-principal \
+            --username "41a8f104-23f4-4c55-99ce-7c2d830f1d21" \
+            --password "njS8Q~IrJ4H4Bij_8JFaXppTmPc7aPdBgcsiYcjR" \
+            --tenant "c19495c3-7313-414d-bf97-f60a4fbc2c0d"
+
+
+      # 4. Set Azure Subscription
+      - name: Set Azure Subscription
+        run: |
+          az account set \
+            --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+
+
+      # 5. Check Azure Account
+      - name: Azure Account
+        run: |
+          az account show
+
+
+      # 6. Terraform Init
       - name: Terraform Init
-        run: terraform init
+        run: |
+          terraform init
 
 
-      # Terraform Format Check
+      # 7. Terraform Format
       - name: Terraform Format
-        run: terraform fmt -check -recursive
+        run: |
+          terraform fmt -check -recursive
 
 
-      # Terraform Validation
+      # 8. Terraform Validate
       - name: Terraform Validate
-        run: terraform validate
+        run: |
+          terraform validate
 
 
-      # Terraform Plan - Only on Pull Request
+      # 9. Terraform Plan
       - name: Terraform Plan
         if: github.event_name == 'pull_request'
-        run: terraform plan
+        run: |
+          terraform plan
 
 
-      # Terraform Apply - Only on Main
+      # 10. Terraform Apply
       - name: Terraform Apply
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve
+        run: |
+          terraform apply -auto-approve
