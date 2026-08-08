@@ -2,32 +2,25 @@ name: Terraform
 
 on:
 
-  # Run when Pull Request is created/updated against main
+  # Feature branch par push hote hi PLAN chalega
+  push:
+    branches:
+      - "**"
+
+  # Pull Request to main
   pull_request:
     branches:
       - main
-    paths:
-      - "environment/dev/**"
-      - "modules/**"
 
-  # Run when code is pushed to main
-  push:
-    branches:
-      - main
-    paths:
-      - "environment/dev/**"
-      - "modules/**"
-
-
-  # Allows manual execution from GitHub Actions
+  # Manually run workflow
   workflow_dispatch:
 
 
 jobs:
 
-  terraform-plan:
+  terraform:
 
-    name: Terraform Plan
+    name: Terraform
     runs-on: ubuntu-latest
 
     steps:
@@ -84,14 +77,17 @@ jobs:
 
 
       # 9. Terraform Plan
+      # Feature branch + Pull Request par PLAN
       - name: Terraform Plan
-        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+        run: |
+          terraform plan
         working-directory: environment/dev
-        run: terraform plan
 
 
       # 10. Terraform Apply
+      # APPLY sirf main branch par
       - name: Terraform Apply
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          terraform apply -auto-approve
         working-directory: environment/dev
-        run: terraform apply -auto-approve
