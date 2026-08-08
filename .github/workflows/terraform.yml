@@ -1,7 +1,21 @@
 name: Terraform
 
 on:
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "environments/dev/**"
+      - "modules/**"
+
   push:
+    branches:
+      - main
+    paths:
+      - "environments/dev/**"
+      - "modules/**"
+
 
 jobs:
 
@@ -11,14 +25,38 @@ jobs:
 
     steps:
 
+      # Checkout GitHub repository
       - name: Checkout Code
         uses: actions/checkout@v4
 
+
+      # Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+
+      # Terraform Initialization
       - name: Terraform Init
         run: terraform init
 
+
+      # Terraform Format Check
+      - name: Terraform Format
+        run: terraform fmt -check -recursive
+
+
+      # Terraform Validation
       - name: Terraform Validate
         run: terraform validate
 
+
+      # Terraform Plan - Only on Pull Request
       - name: Terraform Plan
+        if: github.event_name == 'pull_request'
         run: terraform plan
+
+
+      # Terraform Apply - Only on Main
+      - name: Terraform Apply
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve
