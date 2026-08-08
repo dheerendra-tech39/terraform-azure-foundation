@@ -18,6 +18,7 @@ on:
       - "environment/dev/**"
       - "modules/**"
 
+
   # Allows manual execution from GitHub Actions
   workflow_dispatch:
 
