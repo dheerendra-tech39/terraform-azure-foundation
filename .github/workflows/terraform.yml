@@ -2,19 +2,24 @@ name: Terraform
 
 on:
 
+  # Run when Pull Request is created/updated against main
   pull_request:
     branches:
       - main
     paths:
-      - "environments/dev/**"
+      - "environment/dev/**"
       - "modules/**"
 
+  # Run when code is pushed to main
   push:
     branches:
       - main
     paths:
-      - "environments/dev/**"
+      - "environment/dev/**"
       - "modules/**"
+
+  # Allows manual execution from GitHub Actions
+  workflow_dispatch:
 
 
 jobs:
@@ -36,13 +41,13 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
 
-      # 3. Azure Login using Service Principal
+      # 3. Azure Login
       - name: Azure Login
         run: |
           az login \
             --service-principal \
             --username "41a8f104-23f4-4c55-99ce-7c2d830f1d21" \
-            --password "njS8Q~IrJ4H4Bij_8JFaXppTmPc7aPdBgcsiYcjR" \
+            --password "${{ secrets.AZURE_CLIENT_SECRET }}" \
             --tenant "c19495c3-7313-414d-bf97-f60a4fbc2c0d"
 
 
@@ -61,31 +66,31 @@ jobs:
 
       # 6. Terraform Init
       - name: Terraform Init
-        run: |
-          terraform init
+        working-directory: environment/dev
+        run: terraform init
 
 
       # 7. Terraform Format
       - name: Terraform Format
-        run: |
-          terraform fmt -check -recursive
+        working-directory: environment/dev
+        run: terraform fmt -check -recursive
 
 
       # 8. Terraform Validate
       - name: Terraform Validate
-        run: |
-          terraform validate
+        working-directory: environment/dev
+        run: terraform validate
 
 
       # 9. Terraform Plan
       - name: Terraform Plan
-        if: github.event_name == 'pull_request'
-        run: |
-          terraform plan
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+        working-directory: environment/dev
+        run: terraform plan
 
 
       # 10. Terraform Apply
       - name: Terraform Apply
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          terraform apply -auto-approve
+        working-directory: environment/dev
+        run: terraform apply -auto-approve
