@@ -294,7 +294,7 @@ jobs:
 
       # 11. Terraform Apply
       - name: Terraform Apply
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         working-directory: environment/dev
         run: |
           terraform apply -auto-approve -input=false -var-file="terraform.tfvars"
