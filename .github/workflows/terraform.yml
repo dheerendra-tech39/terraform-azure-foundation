@@ -40,8 +40,8 @@ jobs:
         run: |
           az login \
             --service-principal \
-            --username "41a8f104-23f4-4c55-99ce-7c2d830f1d21" \
-            --password "njS8Q~IrJ4H4Bij_8JFaXppTmPc7aPdBgcsiYcjR" \
+            --username "efa612e2-52ae-4608-adaf-e792898d130b" \
+            --password "s6T8Q~YomF6Kc_iISy~4VXwpKXG5UIWAk0V5gbtk" \
             --tenant "c19495c3-7313-414d-bf97-f60a4fbc2c0d"
 
 
