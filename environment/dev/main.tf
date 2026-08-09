@@ -18,7 +18,7 @@ module "subnets" {
 }
 
 module "pip" {
-  depends_on = [var.vnets, var.subnets]
+  depends_on = [var.vnets, var.subnets, var.rgs]
   source     = "../../modules/azurerm_public_ip"
   pip        = var.pip
 
@@ -62,7 +62,7 @@ module "sql_database" {
 }
 
 module "bastions" {
-  depends_on = [module.subnets]
+  depends_on = [module.subnets,var.rgs]
 
   source = "../../modules/azurerm_bastion"
 
@@ -71,7 +71,7 @@ module "bastions" {
 }
 
 module "application_gateway" {
-  depends_on = [module.subnets]
+  depends_on = [module.subnets,var.rgs]
 
   source = "../../modules/azurerm_application_gateway"
 
