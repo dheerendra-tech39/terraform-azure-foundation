@@ -29,6 +29,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Create Terraform Variables
+        env:
+          TFVARS_CONTENT: ${{ secrets.TERRAFORM_TFVARS }}
+        run: 
+         printf '%s' "$TFVARS_CONTENT" > environment/dev/terraform.tfvars  
+
 
       # 2. Setup Terraform
       - name: Setup Terraform
@@ -82,9 +88,13 @@ jobs:
       #     terraform plan
       #   working-directory: environment/dev
       
+      # - name: Terraform Plan
+      #   working-directory: environment/dev
+      #   run: terraform plan -input=false  
+
       - name: Terraform Plan
         working-directory: environment/dev
-        run: terraform plan -input=false  
+        run: terraform plan -input=false -var-file="terraform.tfvars"
         
 
       # 10. Terraform Apply
