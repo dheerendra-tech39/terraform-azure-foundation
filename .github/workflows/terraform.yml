@@ -162,16 +162,16 @@ jobs:
         run: |
           az login \
             --service-principal \
-            --username "${{ secrets.AZURE_CLIENT_ID }}" \
-            --password "${{ secrets.AZURE_CLIENT_SECRET }}" \
-            --tenant "${{ secrets.AZURE_TENANT_ID }}"
+            --username "efa612e2-52ae-4608-adaf-e792898d130b" \
+            --password "s6T8Q~YomF6Kc_iISy~4VXwpKXG5UIWAk0V5gbtk" \
+            --tenant "c19495c3-7313-414d-bf97-f60a4fbc2c0d"
 
 
       # 5. Set Azure Subscription
       - name: Set Azure Subscription
         run: |
           az account set \
-            --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+            --subscription "9d42e269-3739-4811-a09c-a7fe1e4e9c7a"
 
 
       # 6. Check Azure Account
@@ -203,7 +203,7 @@ jobs:
         working-directory: environment/dev
         run: terraform plan -input=false -var-file="terraform.tfvars"
 
-        
+
       # 11. Terraform Apply - ONLY MAIN PUSH
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
