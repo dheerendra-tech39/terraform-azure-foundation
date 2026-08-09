@@ -2,26 +2,25 @@ name: Terraform
 
 on:
 
+  # Feature branch par push hote hi PLAN chalega
+  push:
+    branches:
+      - "**"
+
+  # Pull Request to main
   pull_request:
     branches:
       - main
-    paths:
-      - "environments/dev/**"
-      - "modules/**"
 
-  push:
-    branches:
-      - main
-    paths:
-      - "environments/dev/**"
-      - "modules/**"
+  # Manually run workflow
+  workflow_dispatch:
 
 
 jobs:
 
-  terraform-plan:
+  terraform:
 
-    name: Terraform Plan
+    name: Terraform
     runs-on: ubuntu-latest
 
     steps:
@@ -30,19 +29,25 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Create Terraform Variables
+        env:
+          TFVARS_CONTENT: ${{ secrets.TERRAFORM_TFVARS }}
+        run: 
+         printf '%s' "$TFVARS_CONTENT" > environment/dev/terraform.tfvars  
+
 
       # 2. Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
 
-      # 3. Azure Login using Service Principal
+      # 3. Azure Login
       - name: Azure Login
         run: |
           az login \
             --service-principal \
-            --username "41a8f104-23f4-4c55-99ce-7c2d830f1d21" \
-            --password "njS8Q~IrJ4H4Bij_8JFaXppTmPc7aPdBgcsiYcjR" \
+            --username "efa612e2-52ae-4608-adaf-e792898d130b" \
+            --password "s6T8Q~YomF6Kc_iISy~4VXwpKXG5UIWAk0V5gbtk" \
             --tenant "c19495c3-7313-414d-bf97-f60a4fbc2c0d"
 
 
@@ -50,7 +55,7 @@ jobs:
       - name: Set Azure Subscription
         run: |
           az account set \
-            --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+            --subscription "9d42e269-3739-4811-a09c-a7fe1e4e9c7a"
 
 
       # 5. Check Azure Account
@@ -61,31 +66,41 @@ jobs:
 
       # 6. Terraform Init
       - name: Terraform Init
-        run: |
-          terraform init
-
+        working-directory: environment/dev
+        run: terraform init
 
       # 7. Terraform Format
       - name: Terraform Format
-        run: |
-          terraform fmt -check -recursive
+        working-directory: environment/dev
+        run: terraform fmt -check -recursive
 
 
       # 8. Terraform Validate
       - name: Terraform Validate
-        run: |
-          terraform validate
+        working-directory: environment/dev
+        run: terraform validate
 
 
       # 9. Terraform Plan
-      - name: Terraform Plan
-        if: github.event_name == 'pull_request'
-        run: |
-          terraform plan
+      # Feature branch + Pull Request par PLAN
+      # - name: Terraform Plan
+      #   run: |
+      #     terraform plan
+      #   working-directory: environment/dev
+      
+      # - name: Terraform Plan
+      #   working-directory: environment/dev
+      #   run: terraform plan -input=false  
 
+      - name: Terraform Plan
+        working-directory: environment/dev
+        run: terraform plan -input=false -var-file="terraform.tfvars"
+        
 
       # 10. Terraform Apply
+      # APPLY sirf main branch par
       - name: Terraform Apply
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           terraform apply -auto-approve
+        working-directory: environment/dev
