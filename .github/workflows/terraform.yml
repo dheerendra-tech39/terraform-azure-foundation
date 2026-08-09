@@ -78,10 +78,14 @@ jobs:
 
       # 9. Terraform Plan
       # Feature branch + Pull Request par PLAN
+      # - name: Terraform Plan
+      #   run: |
+      #     terraform plan
+      #   working-directory: environment/dev
+      
       - name: Terraform Plan
-        run: |
-          terraform plan
         working-directory: environment/dev
+        run: terraform plan -input=false  
         
 
       # 10. Terraform Apply
